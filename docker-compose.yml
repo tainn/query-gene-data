@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  query-gene-data:
+    build: .
+    image: query-gene-data
+    container_name: query-gene-data
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_HOST=postgres-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=genedb
+      - POSTGRES_USER=geneuser
+      - POSTGRES_PASSWORD=genepasswd
+    working_dir: /app
+    command: uvicorn main:app --host 0.0.0.0
+    depends_on:
+      - postgres-db
+
+  db-init-setup:
+    build: .
+    image: query-gene-data
+    container_name: db-init-setup
+    restart: "no"
+    environment:
+      - POSTGRES_HOST=postgres-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=genedb
+      - POSTGRES_USER=geneuser
+      - POSTGRES_PASSWORD=genepasswd
+
+      - VCF_FILE_PATH=hg37_1k_lines.vcf
+      - DB_WAIT_TIME=10
+    working_dir: /app/dbsetup
+    command: ./dbsetup.py
+    depends_on:
+      - postgres-db
+
+  postgres-db:
+    image: postgres
+    container_name: postgres-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=genedb
+      - POSTGRES_USER=geneuser
+      - POSTGRES_PASSWORD=genepasswd
+    ports:
+      - '5432:5432'
