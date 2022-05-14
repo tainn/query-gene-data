@@ -1,7 +1,7 @@
 # query-gene-data
 
-A service that accepts `GET` requests on the `/data` endpoint with a query string `q` and returns the corresponding
-database row's values.
+A service that accepts `GET` requests on the `/data` endpoint with a query string `q` and returns the corresponding gene
+sequence variation values from the database.
 
 ## Run
 
